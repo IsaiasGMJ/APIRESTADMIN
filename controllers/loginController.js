@@ -27,7 +27,7 @@ const register = async (req, res) => {
         await newUser.save();
 
         // Generar un token JWT
-        const token = jwt.sign({ userId: newUser._id, email }, JWT_SECRET, { expiresIn: "2h" });
+        const token = jwt.sign({ userId: newUser._id, email }, JWT_SECRET, { expiresIn: "10m" });
 
         // Retornar el nuevo usuario y el token
         return res.status(201).json({ user: newUser, token });
@@ -51,11 +51,8 @@ const login = async (req, res) => {
         // Buscar el usuario por email
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
-            // Generar un token JWT
-            const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "2h" });
-
             // Retornar el usuario y el token
-            return res.status(200).json({ user, token });
+            return res.status(200).json({ user});
         } else {
             return res.status(403).send("Credenciales inválidas");
         }
