@@ -48,7 +48,7 @@ router.put('/courses/:id', verifyToken, adminMiddleware, courseController.update
 router.delete('/courses/:id', verifyToken, adminMiddleware, courseController.deleteCourse); // admin
 
 // Rutas de Users
-router.post('/users', adminMiddleware, userController.createUser);  // admin
+router.post('/users', verifyToken, adminMiddleware, userController.createUser);  // admin
 router.get('/users', verifyToken, userController.getUsers);
 router.get('/users/:id', verifyToken, userController.getUserById);
 router.put('/users/:id', verifyToken, adminMiddleware, userController.updateUser); // admin

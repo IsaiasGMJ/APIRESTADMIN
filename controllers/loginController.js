@@ -25,12 +25,8 @@ const register = async (req, res) => {
         // Crear un nuevo usuario y guardarlo en la base de datos
         const newUser = new User({ username, email, password });
         await newUser.save();
-
-        // Generar un token JWT
-        const token = jwt.sign({ userId: newUser._id, email }, JWT_SECRET, { expiresIn: "10m" });
-
-        // Retornar el nuevo usuario y el token
-        return res.status(201).json({ user: newUser, token });
+        // Retornar el nuevo usuario
+        return res.status(201).json({ user: newUser});
 
     } catch (err) {
         console.log("Ha ocurrido un error", err);
@@ -51,8 +47,11 @@ const login = async (req, res) => {
         // Buscar el usuario por email
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
+            // Generar un token JWT
+            const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "1m" });
+
             // Retornar el usuario y el token
-            return res.status(200).json({ user});
+            return res.status(200).json({ user, token });
         } else {
             return res.status(403).send("Credenciales inválidas");
         }
