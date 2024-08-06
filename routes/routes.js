@@ -2,11 +2,29 @@ const express = require('express');
 const assignmentController = require('../controllers/assignmentController');
 const enrollmentController = require('../controllers/enrollmentController');
 const courseController = require('../controllers/courseController');
+const path = require('path');
+const multer = require('multer');
 const userController = require('../controllers/userController');  // Importa el controlador de Users
 const { adminMiddleware } = require('../middleware/authMiddleware');
 const verifyToken  = require('../middleware/auth');
 
 const router = express.Router();
+
+// Configuración de multer para guardar imagenes
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Nombre único para el archivo
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// Rutas de Courses
+router.post('/courses', upload.single('image'), courseController.createCourse);
+
 
 // Rutas de Assignments
 router.post('/assignments', verifyToken, assignmentController.createAssignment);

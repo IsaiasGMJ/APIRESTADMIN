@@ -1,15 +1,15 @@
 const Course = require('../models/Course');
 
 // Crear un nuevo curso
-exports.createCourse = async (req, res) => {
-    try {
-        const course = new Course(req.body);
-        await course.save();
-        res.status(201).json(course);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// exports.createCourse = async (req, res) => {
+//     try {
+//         const course = new Course(req.body);
+//         await course.save();
+//         res.status(201).json(course);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Obtener todos los cursos
 exports.getCourses = async (req, res) => {
@@ -53,3 +53,23 @@ exports.deleteCourse = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+//subir imagen del curso
+exports.createCourse = async (req, res) => {
+    try {
+        const { title, description } = req.body;
+        const imageUrl = req.file ? `/public/uploads/${req.file.filename}` : null;
+
+        const newCourse = new Course({
+            title,
+            description,
+            imageUrl  // Guardar la URL de la imagen
+        });
+
+        await newCourse.save();
+        res.status(201).json(newCourse);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
