@@ -11,4 +11,8 @@ const courseSchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
+courseSchema.methods.setImage = function(filename) {
+    this.image = `/public/images/courses/${filename}`;
+};
+
 module.exports = mongoose.model('Course', courseSchema);

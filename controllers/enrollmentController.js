@@ -2,13 +2,18 @@ const Enrollment = require('../models/Enrollment');
 
 exports.createEnrollment = async (req, res) => {
     try {
-        const enrollment = new Enrollment(req.body);
+        const { course_id, user_id } = req.body;
+        if (!course_id || !user_id) {
+            return res.status(400).json({ error: 'course_id and user_id are required' });
+        }
+        const enrollment = new Enrollment({ course_id, user_id });
         await enrollment.save();
         res.status(201).json(enrollment);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.getEnrollments = async (req, res) => {
     try {
