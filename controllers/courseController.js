@@ -1,23 +1,35 @@
 const Course = require('../models/Course');
-const upload = require('../libs/almacen');
-
 
 exports.createCourse = async (req, res) => {
     try {
-        const { name, description, price, teacher_id } = req.body;
+        const { name, description, price, teacher_id, status } = req.body;
+
+        // Verificar si el curso ya existe
+        let cursoExistente = await Course.findOne({ name });
+        if (cursoExistente) {
+            return res.status(400).json({ msg: 'El curso ya existe' });
+        }
+
+        // Validar datos requeridos
+        if (!name || !description || !price || teacher_id === undefined) {
+            return res.status(400).json({ msg: 'Todos los campos son requeridos' });
+        }
+
+        // Construir el path de la imagen si existe
+        let imagenPath = '';
+        if (req.file) {
+            imagenPath = `/images/cursos/${req.file.filename}`;
+        }
 
         const course = new Course({
-            name:req.body.name,
-            description:req.body.description,
-            price:req.body.price,
-            teacher_id:req.body.teacher_id
+            name,
+            description,
+            price,
+            image: imagenPath,
+            teacher_id,
+            status
         });
 
-        if(req.file){
-            const {filename} = req.file;
-            course.setImage(filename);
-        }
-    
         await course.save();
         res.status(201).json(course);
     } catch (error) {
