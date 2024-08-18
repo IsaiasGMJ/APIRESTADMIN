@@ -48,7 +48,7 @@ const login = async (req, res) => {
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
             // Generar un token JWT
-            const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "2h" });
+            const token = jwt.sign({ user_id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "2h" });
 
             // Retornar el usuario y el token
             return res.status(200).json({ user, token });

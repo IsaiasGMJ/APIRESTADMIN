@@ -6,7 +6,7 @@ const { JWT_SECRET } = process.env;
 
 const verifyToken = (req, res, next) => {
     const token = req.header('x-auth-token');  // Asegúrate de que el token se pasa en este header
-
+    
     if (!token) {
         return res.status(403).json({ msg: 'No se ha enviado el token de autenticación' });
     }

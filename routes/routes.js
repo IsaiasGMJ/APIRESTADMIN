@@ -8,6 +8,7 @@ const userController = require('../controllers/userController');  // Importa el 
 const { adminMiddleware } = require('../middleware/authMiddleware');
 const verifyToken  = require('../middleware/auth');
 const userCourseController = require('../controllers/userCourseController');
+const { verify } = require('crypto');
 
 const router = express.Router();
 
@@ -101,9 +102,10 @@ router.put('/users/:id', uploadUsuarios.single('imagen'), verifyToken, adminMidd
 router.delete('/users/:id', verifyToken, adminMiddleware, userController.deleteUser);  // admin
 
 // Ruta para guardar un curso para un usuario
-router.post('/user-courses', userCourseController.saveCourseForUser);
+router.post('/user-courses',verifyToken, userCourseController.saveCourseForUser);
 
 // Ruta para obtener los cursos guardados por un usuario
-router.get('/user-courses/:userId', userCourseController.getCoursesForUser);
+router.get('/user-courses/:userId',verifyToken, userCourseController.getCoursesForUser);
+router.delete('/user-courses/:courseId', verifyToken, userCourseController.deleteCourseForUser);
 
 module.exports = router;

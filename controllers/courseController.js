@@ -18,7 +18,7 @@ exports.createCourse = async (req, res) => {
         // Construir el path de la imagen si existe
         let imagenPath = '';
         if (req.file) {
-            imagenPath = `/images/cursos/${req.file.filename}`;
+            imagenPath = `http://localhost:3000/images/cursos/${req.file.filename}`;
         }
 
         const course = new Course({
