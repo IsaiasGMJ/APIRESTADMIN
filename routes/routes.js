@@ -6,11 +6,8 @@ const path = require('path');
 const multer = require('multer');
 const userController = require('../controllers/userController');  // Importa el controlador de Users
 const { adminMiddleware } = require('../middleware/authMiddleware');
-const verifyToken  = require('../middleware/auth');
+const verifyToken = require('../middleware/auth');
 const userCourseController = require('../controllers/userCourseController');
-const { verify } = require('crypto');
-
-const router = express.Router();
 
 // Configuración de Multer para Usuarios
 const storageUsuarios = multer.diskStorage({
@@ -36,7 +33,7 @@ const fileFilterUsuarios = (req, file, cb) => {
 
 const uploadUsuarios = multer({
     storage: storageUsuarios,
-    limits: { fileSize: 1024 * 1024 * 50 }, // 5MB
+    limits: { fileSize: 1024 * 1024 * 50 }, // 50MB
     fileFilter: fileFilterUsuarios
 });
 
@@ -64,13 +61,17 @@ const fileFilterCursos = (req, file, cb) => {
 
 const uploadCursos = multer({
     storage: storageCursos,
-    limits: { fileSize: 1024 * 1024 * 50 }, // 5MB
+    limits: { fileSize: 1024 * 1024 * 50 }, // 50MB
     fileFilter: fileFilterCursos
 });
 
-// Rutas de Courses
-router.post('/courses', uploadCursos.single('image'), courseController.createCourse);
+const router = express.Router();
 
+// Rutas de Courses
+router.get('/courses', courseController.getCourses);
+router.post('/courses', uploadCursos.single('image'), verifyToken, adminMiddleware, courseController.createCourse); // admin
+router.put('/courses/:id', uploadCursos.single('image'), verifyToken, adminMiddleware, courseController.updateCourse); // admin
+router.delete('/courses/:id', verifyToken, adminMiddleware, courseController.deleteCourse); // admin
 
 // Rutas de Assignments
 router.post('/assignments', verifyToken, assignmentController.createAssignment);
@@ -86,14 +87,6 @@ router.get('/enrollments/:id', verifyToken, enrollmentController.getEnrollmentBy
 router.put('/enrollments/:id', verifyToken, enrollmentController.updateEnrollment);
 router.delete('/enrollments/:id', verifyToken, enrollmentController.deleteEnrollment);
 
-// Rutas de Courses
-
-router.get('/courses', courseController.getCourses); // No se requiere autenticación
-router.get('/courses/:id', courseController.getCourseById); // No se requiere autenticación
-// router.post('/courses', storageCursos.single('imagen'), verifyToken, adminMiddleware, courseController.createCourse); //admin
-router.put('/courses/:id', uploadCursos.single('imagen'), verifyToken, adminMiddleware, courseController.updateCourse); // admin
-router.delete('/courses/:id', verifyToken, adminMiddleware, courseController.deleteCourse); // admin
-
 // Rutas de Users
 router.get('/users', verifyToken, userController.getUsers);
 router.get('/users/:id', verifyToken, userController.getUserById);
@@ -102,10 +95,10 @@ router.put('/users/:id', uploadUsuarios.single('imagen'), verifyToken, adminMidd
 router.delete('/users/:id', verifyToken, adminMiddleware, userController.deleteUser);  // admin
 
 // Ruta para guardar un curso para un usuario
-router.post('/user-courses',verifyToken, userCourseController.saveCourseForUser);
+router.post('/user-courses', verifyToken, userCourseController.saveCourseForUser);
 
 // Ruta para obtener los cursos guardados por un usuario
-router.get('/user-courses/:userId',verifyToken, userCourseController.getCoursesForUser);
+router.get('/user-courses/:userId', verifyToken, userCourseController.getCoursesForUser);
 router.delete('/user-courses/:courseId', verifyToken, userCourseController.deleteCourseForUser);
 
 module.exports = router;

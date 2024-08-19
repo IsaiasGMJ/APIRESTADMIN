@@ -61,14 +61,25 @@ exports.getCourseById = async (req, res) => {
 // Actualizar un curso
 exports.updateCourse = async (req, res) => {
     try {
-        const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!course) return res.status(404).json({ message: 'Course not found' });
-        res.status(200).json(course);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        const { id } = req.params;
+        const updateData = {
+          name: req.body.name,
+          description: req.body.description,
+          price: req.body.price,
+          teacher_id: req.body.teacher_id,
+          status: req.body.status,
+        };
+    
+        if (req.file) {
+          updateData.image = `http://localhost:3000/images/cursos/${req.file.filename}`; // O el campo que uses para almacenar la imagen
+        }
+    
+        const course = await Course.findByIdAndUpdate(id, updateData, { new: true });
+        res.json(course);
+      } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el curso' });
+      }
     }
-};
-
 // Eliminar un curso
 exports.deleteCourse = async (req, res) => {
     try {

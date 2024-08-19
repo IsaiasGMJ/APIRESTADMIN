@@ -6,6 +6,15 @@ exports.createEnrollment = async (req, res) => {
         if (!course_id || !user_id) {
             return res.status(400).json({ error: 'course_id and user_id are required' });
         }
+        
+        // Verificar si el curso y el usuario existen
+        const courseExists = await Course.findById(course_id);
+        const userExists = await User.findById(user_id);
+        
+        if (!courseExists || !userExists) {
+            return res.status(400).json({ error: 'Invalid course_id or user_id' });
+        }
+
         const enrollment = new Enrollment({ course_id, user_id });
         await enrollment.save();
         res.status(201).json(enrollment);
@@ -17,8 +26,13 @@ exports.createEnrollment = async (req, res) => {
 
 exports.getEnrollments = async (req, res) => {
     try {
-        const enrollments = await Enrollment.find().populate('user_id course_id');
-        res.status(200).json(enrollments);
+        const enrollments = await Enrollment.find()
+            .populate('user_id', 'name')
+            .populate('course_id', 'name');
+        
+        const validEnrollments = enrollments.filter(enrollment => enrollment.course_id !== null);
+        
+        res.status(200).json(validEnrollments);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
