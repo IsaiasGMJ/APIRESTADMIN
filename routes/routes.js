@@ -8,6 +8,8 @@ const userController = require('../controllers/userController');  // Importa el 
 const { adminMiddleware } = require('../middleware/authMiddleware');
 const verifyToken = require('../middleware/auth');
 const userCourseController = require('../controllers/userCourseController');
+const Enrollment = require('../models/Enrollment');
+const inscripcionesController = require('../controllers/inscripcionesController');
 
 // Configuración de Multer para Usuarios
 const storageUsuarios = multer.diskStorage({

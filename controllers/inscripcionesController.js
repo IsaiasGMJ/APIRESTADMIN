@@ -1,7 +1,4 @@
 const Enrollment = require('../models/Enrollment'); // Ajusta la ruta según tu estructura
-const Course = require('../models/Course'); // Ajusta la ruta según tu estructura
-const User = require('../models/User'); // Ajusta la ruta según tu estructura
-
 
 exports.createEnrollment = async (req, res) => {
     try {
@@ -34,4 +31,3 @@ exports.createEnrollment = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-

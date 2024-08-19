@@ -1,4 +1,6 @@
 const Enrollment = require('../models/Enrollment');
+const Course = require('../models/Course'); // Importa el modelo Course
+const User = require('../models/User'); // Importa el modelo User
 
 exports.createEnrollment = async (req, res) => {
     try {
@@ -23,11 +25,10 @@ exports.createEnrollment = async (req, res) => {
     }
 };
 
-
 exports.getEnrollments = async (req, res) => {
     try {
         const enrollments = await Enrollment.find()
-            .populate('user_id', 'name')
+            .populate('user_id', 'username')
             .populate('course_id', 'name');
         
         const validEnrollments = enrollments.filter(enrollment => enrollment.course_id !== null);
